@@ -1,3 +1,10 @@
 {
-    "preset": "laravel"
+    "preset": "laravel",
+    "exclude": [
+        "dist",
+        "node_modules",
+        "public",
+        "storage",
+        "vendor"
+    ]
 }

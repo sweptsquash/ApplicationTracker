@@ -6,9 +6,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="flex min-h-screen flex-col">
-    <NavBar />
-    <div class="flex grow px-4">
+  <main class="flex min-h-screen flex-col bg-gray-100">
+    <div class="p-4">
       <slot />
     </div>
     <AppFooter />

@@ -6,8 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Vite;
 use Inertia\Middleware;
-use Lab404\Impersonate\Services\ImpersonateManager;
-use RuntimeException;
 
 class HandleInertiaRequests extends Middleware
 {

@@ -1,0 +1,7 @@
+{
+    "disabled": [],
+    "hooks": {
+        "pre-commit": ["composer test:lint"],
+        "pre-push": ["php artisan test"]
+    }
+}

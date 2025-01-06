@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "allowJs": true,
+        "paths": {
+            "~": ["."],
+            "~/*": ["./*"],
+            "@": ["."],
+            "@/*": ["./*"],
+            "~~": ["."],
+            "~~/*": ["./*"],
+            "@@": ["."],
+            "@@/*": ["./*"],
+            "assets": ["./assets"],
+            "assets/*": ["./assets/*"],
+            "public": ["./public"],
+            "public/*": ["./public/*"],
+            "#app": ["./node_modules/nuxt/dist/app"],
+            "#app/*": ["./node_modules/nuxt/dist/app/*"],
+            "vue-demi": ["./node_modules/nuxt/dist/app/compat/vue-demi"],
+            "pinia": ["./node_modules/pinia/dist/pinia"]
+        }
+    },
+    "exclude": ["node_modules", ".nuxt", ".output", "dist"]
+  }
+  

@@ -25,7 +25,7 @@ createInertiaApp({
   setup({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)
-      .use(trail, { routes })
+      .use(trail, { routes, absolute: true })
       .mount(el)
   },
 })

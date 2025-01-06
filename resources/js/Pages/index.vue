@@ -1,6 +1,9 @@
 <script lang="ts" setup>
+import { PoundSterling } from 'lucide-vue-next'
+
 defineProps<{
-  applications: App.Application[]
+  applications: { data: App.Application[]; meta: App.PageMeta }
+  application?: App.Application
   // TODO: Add Stats
 }>()
 
@@ -10,16 +13,39 @@ const isAddApplicationOpen = ref(false)
 
 const isSubmitting = ref(false)
 
-const form = reactive({
+const form = reactive<{
+  title: string
+  url: string
+  company?: string
+  salaryRange: 'unknown' | 'range' | 'fixed'
+  salary: { min: number; max: number }
+  status: string
+}>({
   title: '',
-  role: '',
-  salary: '',
-  status: '',
   url: '',
+  company: '',
+  salaryRange: 'unknown',
+  salary: { min: 0, max: 0 },
+  status: 'applied',
 })
 
+const salaryRanges = [
+  { value: 'unknown', label: 'Unknown / Competitive' },
+  { value: 'range', label: 'Range' },
+  { value: 'fixed', label: 'Fixed' },
+]
+
+const statues = [
+  { value: 'applied', label: 'Applied' },
+  { value: 'interviewing', label: 'Interviewing' },
+  { value: 'offer', label: 'Offer' },
+  { value: 'rejected', label: 'Rejected' },
+]
+
 function addApplication() {
-  // TODO
+  isSubmitting.value = true
+
+  useAxios().post(route('applications.store'), form)
 }
 
 function resetApplications() {
@@ -31,20 +57,25 @@ watch(
   (isOpen) => {
     if (!isOpen) {
       form.title = ''
-      form.role = ''
-      form.salary = ''
-      form.status = ''
       form.url = ''
+      form.company = undefined
+      form.salaryRange = 'unknown'
+      form.salary = { min: 0, max: 0 }
+      form.status = 'applied'
     }
   },
   { deep: true },
 )
+
+function formatSalary(app: App.Application) {
+  // TODO
+}
 </script>
 
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
     <StatsPanel
-      v-if="applications.length"
+      v-if="applications.data.length"
       :stats="[
         {
           title: 'Total',
@@ -99,8 +130,13 @@ watch(
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold text-gray-900">Applications</h1>
       </div>
-      <div v-if="applications.length" class="mt-4 flex flex-col gap-2 sm:ml-16 sm:mt-0 sm:flex-row">
-        <button type="button" class="btn btn-primary">Add Application</button>
+      <div
+        v-if="applications.data.length"
+        class="mt-4 flex flex-col gap-2 sm:ml-16 sm:mt-0 sm:flex-row"
+      >
+        <button type="button" class="btn btn-primary" @click="isAddApplicationOpen = true">
+          Add Application
+        </button>
         <button
           type="button"
           class="block rounded-md bg-red-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
@@ -114,7 +150,7 @@ watch(
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <div
-            v-if="applications.length === 0"
+            v-if="applications.data.length === 0"
             class="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400"
           >
             <svg
@@ -144,64 +180,78 @@ watch(
               </button>
             </div>
           </div>
-          <div v-else class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-300">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    Name
-                  </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Title
-                  </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Email
-                  </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Role
-                  </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Status
-                  </th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                    <span class="sr-only">Edit</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="application in applications" :key="application.id">
-                  <td
-                    class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
-                  >
-                    {{ application.date }}
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ application.title }}
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ application.role }}
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ application.salary }}
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ application.status }}
-                  </td>
-                  <td
-                    class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
-                  >
-                    <a href="#" class="text-indigo-600 hover:text-indigo-900">
-                      Edit
-                      <span class="sr-only">, {{ application.title }}</span>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <template v-else>
+            <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
+              <table class="min-w-full divide-y divide-gray-300">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    >
+                      Applied
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Job Title
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Company
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Salary
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Status
+                    </th>
+                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                      <span class="sr-only">Edit</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr v-for="app in applications.data" :key="app.id">
+                    <td
+                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                    >
+                      {{ useDayJs(app.created_at) }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ app.title }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ app.company?.name ?? 'N/A' }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ formatSalary(app) }}
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {{ app.status }}
+                    </td>
+                    <td
+                      class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                    >
+                      <a href="#" class="text-indigo-600 hover:text-indigo-900">
+                        Edit
+                        <span class="sr-only">, {{ app.title }}</span>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -210,10 +260,74 @@ watch(
       <form class="space-y-4">
         <h1 class="border-b text-base/7 font-semibold text-gray-900">Add Application</h1>
 
-        <InputField id="title" v-model="form.title" name="title" label="Title" required />
+        <InputField id="title" v-model="form.title" name="title" label="Job Title" required />
+
+        <InputField id="company" v-model="form.company" name="company" label="Company Name" />
+
+        <InputField id="url" v-model="form.url" name="url" label="URL" required />
+
+        <SelectField
+          id="salaryRange"
+          v-model="form.salaryRange"
+          :options="salaryRanges"
+          name="salaryRange"
+          label="Salary Range"
+          required
+        />
+
+        <template v-if="form.salaryRange === 'fixed'">
+          <InputField
+            id="salary"
+            v-model="form.salary.min"
+            type="number"
+            :min="0"
+            :step="10"
+            name="salary"
+            label="Salary"
+            required
+            :icon="PoundSterling"
+          />
+        </template>
+        <template v-else-if="form.salaryRange === 'range'">
+          <div class="flex flex-row items-center gap-2">
+            <InputField
+              id="salaryMin"
+              v-model="form.salary.min"
+              type="number"
+              :min="0"
+              :step="10"
+              name="salaryMin"
+              label="Minimum Salary"
+              required
+              :icon="PoundSterling"
+            />
+            <InputField
+              id="salaryMax"
+              v-model="form.salary.max"
+              type="number"
+              :min="0"
+              :step="10"
+              name="salaryMax"
+              label="Maximum Salary"
+              required
+              :icon="PoundSterling"
+            />
+          </div>
+        </template>
+
+        <SelectField
+          id="status"
+          v-model="form.status"
+          :options="statues"
+          name="status"
+          label="Application Status"
+          required
+        />
 
         <div class="flex flex-row gap-x-2">
-          <button type="button" class="btn btn-primary grow" @click="isAddApplicationOpen = false">Cancel</button>
+          <button type="button" class="btn grow" @click="isAddApplicationOpen = false">
+            Cancel
+          </button>
           <button type="button" class="btn btn-primary grow" @click="addApplication">
             Add Application
           </button>

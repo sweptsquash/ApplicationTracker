@@ -5,9 +5,14 @@
 @tailwind utilities;
 
 .btn {
-    @apply block rounded-md px-3 py-2 text-center text-sm font-semibold  shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+    @apply block rounded-md px-3 py-2 text-center text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-white hover:bg-gray-100 focus-visible:outline-gray-100 ring-1 ring-inset ring-gray-300;
 }
 
 .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600;
+    @apply bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600 ring-0;
+}
+
+.required::after {
+    content: '*';
+    @apply text-red-500;
 }

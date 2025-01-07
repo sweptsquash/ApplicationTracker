@@ -7,7 +7,7 @@ defineProps<{
     data: Array<{
       name: string
       stat: string | number
-      hideStat?: boolean
+      hideTrend?: boolean
       previousStat?: string | number
       changeType?: 'increase' | 'decrease'
       change?: string
@@ -19,17 +19,19 @@ defineProps<{
 <template>
   <div class="space-y-4">
     <div v-for="{ title, data: items } in stats" :key="title">
-      <h3 class="text-base font-semibold text-gray-900">{{ title }}</h3>
-      <dl
-        class="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0"
-      >
-        <div v-for="item in items" :key="item.name" class="px-4 py-5 sm:p-6">
-          <dt class="text-base font-normal text-gray-900">{{ item.name }}</dt>
+      <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
+      <dl class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div
+          v-for="item in items"
+          :key="item.name"
+          class="rounded-lg bg-white px-4 py-5 shadow ring-1 ring-black/5 dark:bg-gray-800 sm:p-6"
+        >
+          <dt class="text-base font-normal text-gray-900 dark:text-white">{{ item.name }}</dt>
           <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
-            <template v-if="!item.hideStat">
-              <div class="flex items-baseline text-2xl font-semibold text-indigo-600">
+            <template v-if="!item.hideTrend">
+              <div class="flex items-baseline text-2xl font-semibold text-black dark:text-white">
                 {{ item.stat }}
-                <span class="ml-2 text-sm font-medium text-gray-500">
+                <span class="ml-2 text-sm font-medium text-gray-500 dark:text-gray-300">
                   from {{ item.previousStat }}
                 </span>
               </div>
@@ -59,7 +61,7 @@ defineProps<{
               </div>
             </template>
             <template v-else>
-              <div class="flex items-baseline text-2xl font-semibold text-indigo-600">
+              <div class="flex items-baseline text-2xl font-semibold text-black dark:text-white">
                 {{ item.stat }}
               </div>
             </template>

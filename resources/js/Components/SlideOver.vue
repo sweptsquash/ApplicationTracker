@@ -17,7 +17,17 @@ const emits = defineEmits(['close'])
 <template>
   <TransitionRoot as="template" :show="isOpen">
     <Dialog class="relative z-10" @close="emits('close')">
-      <div class="fixed inset-0" />
+      <TransitionChild
+        as="template"
+        enter="ease-in-out duration-500"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="ease-in-out duration-500"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-gray-500/75 transition-opacity dark:bg-gray-800/75" />
+      </TransitionChild>
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
@@ -32,16 +42,18 @@ const emits = defineEmits(['close'])
               leave-to="translate-x-full"
             >
               <DialogPanel class="pointer-events-auto w-screen max-w-2xl">
-                <div class="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+                <div
+                  class="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl dark:bg-gray-700"
+                >
                   <div class="px-4 sm:px-6">
                     <div class="flex items-start justify-between">
-                      <DialogTitle class="text-base font-semibold text-gray-900">
+                      <DialogTitle class="text-base font-semibold text-gray-900 dark:text-white">
                         <slot name="title" />
                       </DialogTitle>
                       <div class="ml-3 flex h-7 items-center">
                         <button
                           type="button"
-                          class="relative rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          class="relative rounded-md bg-transparent text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-white"
                           @click="emits('close')"
                         >
                           <span class="absolute -inset-2.5" />

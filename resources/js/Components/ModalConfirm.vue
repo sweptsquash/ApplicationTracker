@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { CircleCheckBig, CircleX, TriangleAlert } from 'lucide-vue-next'
+import { CircleCheckBig, CircleX, LoaderCircle, TriangleAlert } from 'lucide-vue-next'
 
 withDefaults(
   defineProps<{
     isOpen: boolean
+    isLoading?: boolean
     confirmText?: string
     cancelText?: string
     type: 'danger' | 'warning' | 'success'
     title: string
   }>(),
-  { isOpen: false, confirmText: 'Confirm', cancelText: 'Cancel' },
+  { isOpen: false, isLoading: false, confirmText: 'Confirm', cancelText: 'Cancel' },
 )
 
 const emits = defineEmits(['close', 'cancel', 'confirm'])
@@ -34,7 +35,7 @@ const typeClasses = {
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="fixed inset-0 bg-gray-500/75 transition-opacity" />
+        <div class="fixed inset-0 bg-gray-500/75 transition-opacity dark:bg-gray-800/75" />
       </TransitionChild>
 
       <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -51,9 +52,9 @@ const typeClasses = {
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <DialogPanel
-              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+              class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all dark:bg-gray-800 sm:my-8 sm:w-full sm:max-w-lg"
             >
-              <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+              <div class="bg-white px-4 pb-4 pt-5 dark:bg-gray-800 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
                   <div
                     :class="[
@@ -74,33 +75,36 @@ const typeClasses = {
                     <CircleCheckBig v-else class="size-6 text-indigo-600" aria-hidden="true" />
                   </div>
                   <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                    <DialogTitle as="h3" class="text-base font-semibold text-gray-900">
+                    <DialogTitle
+                      as="h3"
+                      class="text-base font-semibold text-gray-900 dark:text-white"
+                    >
                       {{ title }}
                     </DialogTitle>
                     <div class="mt-2">
-                      <p class="text-sm text-gray-500">
+                      <p class="text-sm text-gray-500 dark:text-gray-300">
                         <slot />
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+              <div
+                class="gap-x-2 bg-gray-50 px-4 py-3 dark:bg-gray-600 sm:flex sm:flex-row-reverse sm:px-6"
+              >
                 <button
                   type="button"
                   :class="[
-                    'inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto',
+                    'btn inline-flex items-center justify-center font-semibold text-white shadow-sm ring-0 disabled:cursor-not-allowed disabled:opacity-50',
                     typeClasses[type],
                   ]"
+                  :disabled="isLoading"
                   @click="emits('confirm')"
                 >
+                  <LoaderCircle v-if="isLoading" class="mr-2 size-4 animate-spin text-white" />
                   {{ confirmText }}
                 </button>
-                <button
-                  type="button"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                  @click="emits('cancel')"
-                >
+                <button type="button" class="btn" @click="emits('cancel')">
                   {{ cancelText }}
                 </button>
               </div>

@@ -60,9 +60,12 @@ declare global {
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
   const useDayJs: typeof import('../Composables/useDayJs')['default']
+  const useFo: typeof import('../Composables/useFormatSalaryPeriod')['useFo']
   const useForm: typeof import('@inertiajs/vue3')['useForm']
   const useFormatCurrency: typeof import('../Composables/useFormatCurrency')['default']
   const useFormatNumber: typeof import('../Composables/useFormatNumber')['default']
+  const useFormatSalary: typeof import('../Composables/useFormatSalary')['default']
+  const useFormatSalaryPeriod: typeof import('../Composables/useFormatSalaryPeriod')['useFormatSalaryPeriod']
   const useId: typeof import('vue')['useId']
   const useModel: typeof import('vue')['useModel']
   const usePage: typeof import('@inertiajs/vue3')['usePage']
@@ -143,6 +146,8 @@ declare module 'vue' {
     readonly useForm: UnwrapRef<typeof import('@inertiajs/vue3')['useForm']>
     readonly useFormatCurrency: UnwrapRef<typeof import('../Composables/useFormatCurrency')['default']>
     readonly useFormatNumber: UnwrapRef<typeof import('../Composables/useFormatNumber')['default']>
+    readonly useFormatSalary: UnwrapRef<typeof import('../Composables/useFormatSalary')['default']>
+    readonly useFormatSalaryPeriod: UnwrapRef<typeof import('../Composables/useFormatSalaryPeriod')['useFormatSalaryPeriod']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly usePage: UnwrapRef<typeof import('@inertiajs/vue3')['usePage']>

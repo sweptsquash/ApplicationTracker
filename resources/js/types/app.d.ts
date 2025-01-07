@@ -16,6 +16,7 @@ declare namespace App {
         salary_min: number;
         salary_max: number;
         status: string;
+        notes?: string | null;
         created_at: string;
         updated_at: string;
     }
@@ -47,5 +48,14 @@ declare namespace App {
       links: {
         [key: number]: { url: string | null; label: string; active: boolean };
       }
+    }
+
+    export type Stats = {
+      applied: number;
+      interviewing: number;
+      rejections: number;
+      offers: number;
+      withdrawn: number;
+      awaiting: number;
     }
 }

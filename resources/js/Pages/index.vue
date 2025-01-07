@@ -1,31 +1,41 @@
 <script lang="ts" setup>
-import { PoundSterling } from 'lucide-vue-next'
+import { Eye, Pencil, PoundSterling } from 'lucide-vue-next'
 
 defineProps<{
   applications: { data: App.Application[]; meta: App.PageMeta }
+  stats: App.Stats
   application?: App.Application
-  // TODO: Add Stats
 }>()
 
 const isConfirmResetOpen = ref(false)
 
 const isAddApplicationOpen = ref(false)
 
+const isApplicationSlideOverOpen = ref(false)
+
+const isEditingApplication = ref(false)
+
 const isSubmitting = ref(false)
 
-const form = reactive<{
+const isResetting = ref(false)
+
+const currentApplication = ref<App.Application>()
+
+const form = useForm<{
   title: string
   url: string
   company?: string
   salaryRange: 'unknown' | 'range' | 'fixed'
-  salary: { min: number; max: number }
+  salary_min: number
+  salary_max: number
   status: string
 }>({
   title: '',
   url: '',
   company: '',
   salaryRange: 'unknown',
-  salary: { min: 0, max: 0 },
+  salary_min: 0,
+  salary_max: 0,
   status: 'applied',
 })
 
@@ -45,35 +55,56 @@ const statues = [
 function addApplication() {
   isSubmitting.value = true
 
-  useAxios().post(route('applications.store'), form)
+  form.post(route('applications.store'), {
+    onSuccess: () => {
+      isAddApplicationOpen.value = false
+      isSubmitting.value = false
+    },
+  })
 }
 
 function resetApplications() {
-  // TODO
+  isResetting.value = true
+
+  useAxios()
+    .delete(route('applications.reset'))
+    .then(() => {
+      isResetting.value = false
+      isConfirmResetOpen.value = false
+    })
 }
 
 watch(
   isAddApplicationOpen,
   (isOpen) => {
     if (!isOpen) {
-      form.title = ''
-      form.url = ''
-      form.company = undefined
-      form.salaryRange = 'unknown'
-      form.salary = { min: 0, max: 0 }
-      form.status = 'applied'
+      form.reset()
     }
   },
   { deep: true },
 )
 
-function formatSalary(app: App.Application) {
-  // TODO
+function fetchApplication(id: number, editable = false) {
+  isApplicationSlideOverOpen.value = true
+  isEditingApplication.value = editable
+
+  useAxios()
+    .get(route('applications.show', id))
+    .then((response) => {
+      currentApplication.value = response.data
+    })
 }
 </script>
 
 <template>
   <div class="px-4 sm:px-6 lg:px-8">
+    <div
+      class="mb-4 flex flex-row items-center justify-between border-b border-gray-300 pb-4 dark:border-gray-600"
+    >
+      <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Application Tracker</h1>
+      <ThemeToggle />
+    </div>
+
     <StatsPanel
       v-if="applications.data.length"
       :stats="[
@@ -81,45 +112,34 @@ function formatSalary(app: App.Application) {
           title: 'Total',
           data: [
             {
-              name: 'Test',
-              stat: 3,
-              hideStat: true,
+              name: 'Applied',
+              stat: stats?.applied,
+              hideTrend: true,
             },
             {
-              name: 'Test',
-              stat: 3,
-              hideStat: true,
+              name: 'Interviewing',
+              stat: stats?.interviewing,
+              hideTrend: true,
             },
             {
-              name: 'Test',
-              stat: 3,
-              hideStat: true,
-            },
-          ],
-        },
-        {
-          title: 'Last 30 Days',
-          data: [
-            {
-              name: 'Test',
-              stat: 3,
-              previousStat: 10,
-              changeType: 'decrease',
-              change: '7%',
+              name: 'Rejections',
+              stat: stats?.rejections,
+              hideTrend: true,
             },
             {
-              name: 'Test',
-              stat: 3,
-              previousStat: 10,
-              changeType: 'decrease',
-              change: '7%',
+              name: 'Awaiting Response',
+              stat: stats?.awaiting,
+              hideTrend: true,
             },
             {
-              name: 'Test',
-              stat: 3,
-              previousStat: 10,
-              changeType: 'decrease',
-              change: '7%',
+              name: 'Offer',
+              stat: stats?.offers,
+              hideTrend: true,
+            },
+            {
+              name: 'Withdrawn',
+              stat: stats?.withdrawn,
+              hideTrend: true,
             },
           ],
         },
@@ -128,7 +148,7 @@ function formatSalary(app: App.Application) {
 
     <div class="mt-4 sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Applications</h1>
+        <h1 class="text-base font-semibold text-gray-900 dark:text-white">Applications</h1>
       </div>
       <div
         v-if="applications.data.length"
@@ -168,7 +188,9 @@ function formatSalary(app: App.Application) {
                 d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
               />
             </svg>
-            <h3 class="mt-2 text-sm font-semibold text-gray-900">No applications</h3>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
+              No applications
+            </h3>
             <p class="mt-1 text-sm text-gray-500">Get started by adding a new application.</p>
             <div class="mt-6">
               <button
@@ -182,75 +204,89 @@ function formatSalary(app: App.Application) {
           </div>
           <template v-else>
             <div class="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg">
-              <table class="min-w-full divide-y divide-gray-300">
-                <thead class="bg-gray-50">
+              <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-800">
                   <tr>
                     <th
                       scope="col"
-                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                    >
-                      Applied
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6"
                     >
                       Job Title
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Company
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
                     >
                       Salary
                     </th>
                     <th
                       scope="col"
-                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
                     >
                       Status
                     </th>
+                    <th
+                      scope="col"
+                      class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white"
+                    >
+                      Applied
+                    </th>
                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span class="sr-only">Edit</span>
+                      <span class="sr-only">Options</span>
                     </th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
+                <tbody
+                  class="divide-y divide-gray-200 bg-white dark:divide-gray-600 dark:bg-gray-700"
+                >
                   <tr v-for="app in applications.data" :key="app.id">
                     <td
-                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                      class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6"
                     >
-                      {{ useDayJs(app.created_at) }}
+                      <p>
+                        <a :href="app.url" class="link" target="_blank" rel="noopener noreferrer">
+                          {{ app.title }}
+                        </a>
+                      </p>
+                      <span class="text-xs font-normal text-gray-500 dark:text-gray-400">
+                        {{ app.company?.name ?? 'N/A' }}
+                      </span>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {{ app.title }}
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-white">
+                      {{ useFormatSalary(app) }}
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {{ app.company?.name ?? 'N/A' }}
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-white">
+                      <StatusBadge :status="app.status" />
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {{ formatSalary(app) }}
-                    </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {{ app.status }}
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-white">
+                      {{ useDayJs(app.created_at).format('DD/MM/YYYY') }}
                     </td>
                     <td
-                      class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
+                      class="relative space-x-2 whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
                     >
-                      <a href="#" class="text-indigo-600 hover:text-indigo-900">
-                        Edit
-                        <span class="sr-only">, {{ app.title }}</span>
-                      </a>
+                      <button
+                        class="btn btn-primary inline-block"
+                        :aria-label="`View, ${app.title}`"
+                        :title="`View, ${app.title}`"
+                        @click="fetchApplication(app.id)"
+                      >
+                        <Eye class="size-4" />
+                      </button>
+                      <button
+                        class="btn inline-block"
+                        :aria-label="`Edit, ${app.title}`"
+                        :title="`Edit, ${app.title}`"
+                        @click="fetchApplication(app.id, true)"
+                      >
+                        <Pencil class="size-4" />
+                      </button>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <Pagination :meta="applications.meta" />
           </template>
         </div>
       </div>
@@ -258,7 +294,7 @@ function formatSalary(app: App.Application) {
 
     <Modal :is-open="isAddApplicationOpen" @close="isAddApplicationOpen = false">
       <form class="space-y-4">
-        <h1 class="border-b text-base/7 font-semibold text-gray-900">Add Application</h1>
+        <h1 class="border-b pb-4 text-base/7 font-semibold">Add Application</h1>
 
         <InputField id="title" v-model="form.title" name="title" label="Job Title" required />
 
@@ -278,7 +314,7 @@ function formatSalary(app: App.Application) {
         <template v-if="form.salaryRange === 'fixed'">
           <InputField
             id="salary"
-            v-model="form.salary.min"
+            v-model="form.salary_min"
             type="number"
             :min="0"
             :step="10"
@@ -292,7 +328,7 @@ function formatSalary(app: App.Application) {
           <div class="flex flex-row items-center gap-2">
             <InputField
               id="salaryMin"
-              v-model="form.salary.min"
+              v-model="form.salary_min"
               type="number"
               :min="0"
               :step="10"
@@ -303,7 +339,7 @@ function formatSalary(app: App.Application) {
             />
             <InputField
               id="salaryMax"
-              v-model="form.salary.max"
+              v-model="form.salary_max"
               type="number"
               :min="0"
               :step="10"
@@ -339,11 +375,20 @@ function formatSalary(app: App.Application) {
       title="Clear Applications"
       type="warning"
       :is-open="isConfirmResetOpen"
+      :is-loading="isResetting"
       @close="isConfirmResetOpen = false"
       @cancel="isConfirmResetOpen = false"
       @confirm="resetApplications"
     >
       Are you sure you want to reset your applications? This action cannot be undone.
     </ModalConfirm>
+
+    <ApplicationSlideOver
+      v-model="currentApplication"
+      :is-open="isApplicationSlideOverOpen"
+      :editable="isEditingApplication"
+      @edit="isEditingApplication = true"
+      @close="isApplicationSlideOverOpen = false"
+    />
   </div>
 </template>

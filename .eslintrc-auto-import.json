@@ -81,6 +81,9 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true
+    "watchSyncEffect": true,
+    "useFormatSalary": true,
+    "useFo": true,
+    "useFormatSalaryPeriod": true
   }
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 const props = defineProps({
   meta: {
@@ -68,7 +68,9 @@ function calcPageRange() {
 </script>
 
 <template>
-  <div class="mt-6 flex w-full items-center justify-between border-t border-gray-300 pt-4">
+  <div
+    class="mt-6 flex w-full items-center justify-between border-t border-gray-300 pt-4 dark:border-gray-600"
+  >
     <div class="flex flex-1 justify-between sm:hidden">
       <InertiaLink
         :href="
@@ -76,14 +78,14 @@ function calcPageRange() {
             ? '#'
             : `${meta.path}?page=${data.page.previous}`
         "
-        class="btn btn-default relative inline-flex"
+        class="btn relative inline-flex"
         :class="{ disabled: data.page.current <= 1 && data.page.previous === 0 }"
       >
         Previous
       </InertiaLink>
       <InertiaLink
         :href="data.page.current >= data.page.last ? '#' : `${meta.path}?page=${data.page.next}`"
-        class="btn btn-default relative inline-flex"
+        class="btn relative inline-flex"
         :class="{
           disabled: data.page.current >= data.page.last,
         }"
@@ -93,7 +95,7 @@ function calcPageRange() {
     </div>
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>
-        <p class="dark:text-base-content text-sm text-gray-700">
+        <p class="dark:text-base-content text-sm text-gray-700 dark:text-gray-300">
           Showing
           {{ ' ' }}
           <span class="font-medium">{{ useFormatNumber(meta?.from) }}</span>
@@ -120,21 +122,20 @@ function calcPageRange() {
                 ? '#'
                 : `${meta.path}?page=${data.page.previous}`
             "
-            class="btn btn-sm btn-default relative inline-flex items-center"
+            class="btn btn-sm relative inline-flex items-center"
             :class="{ disabled: data.page.current <= 1 && data.page.previous === 0 }"
           >
             <span class="sr-only">Previous</span>
-            <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
+            <ChevronLeft class="h-5 w-5" aria-hidden="true" />
           </InertiaLink>
           <InertiaLink
             v-for="p in data.page.range"
             :key="`page${p}`"
             :href="`${meta.path}?page=${p}`"
             :aria-current="data.page.current === p ? 'page' : undefined"
-            class="btn btn-sm relative inline-flex items-center"
+            class="btn btn-sm relative z-10 inline-flex items-center"
             :class="{
-              'btn-primary z-10': data.page.current === p,
-              'btn-default z-10': data.page.current !== p,
+              'btn-primary': data.page.current === p,
             }"
           >
             {{ useFormatNumber(p) }}
@@ -143,13 +144,13 @@ function calcPageRange() {
             :href="
               data.page.current >= data.page.last ? '#' : `${meta.path}?page=${data.page.next}`
             "
-            class="btn btn-sm btn-default relative inline-flex items-center"
+            class="btn btn-sm relative inline-flex items-center"
             :class="{
               disabled: data.page.current >= data.page.last,
             }"
           >
             <span class="sr-only">Next</span>
-            <ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
+            <ChevronRight class="h-5 w-5" aria-hidden="true" />
           </InertiaLink>
         </nav>
       </div>

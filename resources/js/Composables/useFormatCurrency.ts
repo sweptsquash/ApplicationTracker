@@ -1,5 +1,5 @@
 export default function useFormatCurrency(
-  value: any | number | bigint,
+  value: number,
   currencyCode: string = 'GBP',
   withSymbol: boolean = true,
   options = {},

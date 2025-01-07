@@ -5,6 +5,7 @@ defineProps<{
   applications: { data: App.Application[]; meta: App.PageMeta }
   stats: App.Stats
   application?: App.Application
+  errors?: { [key: string]: any }
 }>()
 
 const isConfirmResetOpen = ref(false)
@@ -25,24 +26,36 @@ const form = useForm<{
   title: string
   url: string
   company?: string
-  salaryRange: 'unknown' | 'range' | 'fixed'
+  salary_period?: 'hourly' | 'daily' | 'weekly' | 'bi-weekly' | 'monthly' | 'yearly'
+  salary_type: 'unknown' | 'range' | 'fixed'
   salary_min: number
   salary_max: number
   status: string
 }>({
   title: '',
   url: '',
-  company: '',
-  salaryRange: 'unknown',
+  company: undefined,
+  salary_period: 'yearly',
+  salary_type: 'unknown',
   salary_min: 0,
   salary_max: 0,
   status: 'applied',
 })
 
-const salaryRanges = [
+const salaryTypes = [
   { value: 'unknown', label: 'Unknown / Competitive' },
   { value: 'range', label: 'Range' },
   { value: 'fixed', label: 'Fixed' },
+]
+
+const salaryPeriods = [
+  { value: '', label: 'Unknown / Not Provided' },
+  { value: 'hourly', label: 'Hourly' },
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'bi-weekly', label: 'Bi-Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Yearly' },
 ]
 
 const statues = [
@@ -296,22 +309,47 @@ function fetchApplication(id: number, editable = false) {
       <form class="space-y-4">
         <h1 class="border-b pb-4 text-base/7 font-semibold">Add Application</h1>
 
-        <InputField id="title" v-model="form.title" name="title" label="Job Title" required />
-
-        <InputField id="company" v-model="form.company" name="company" label="Company Name" />
-
-        <InputField id="url" v-model="form.url" name="url" label="URL" required />
-
-        <SelectField
-          id="salaryRange"
-          v-model="form.salaryRange"
-          :options="salaryRanges"
-          name="salaryRange"
-          label="Salary Range"
+        <InputField
+          id="title"
+          v-model="form.title"
+          name="title"
+          label="Job Title"
           required
+          :errors
         />
 
-        <template v-if="form.salaryRange === 'fixed'">
+        <InputField
+          id="company"
+          v-model="form.company"
+          name="company"
+          label="Company Name"
+          :errors
+        />
+
+        <InputField id="url" v-model="form.url" name="url" label="URL" required :errors />
+
+        <SelectField
+          id="salary_type"
+          v-model="form.salary_type"
+          :options="salaryTypes"
+          name="salary_type"
+          label="Salary Type"
+          required
+          :errors
+        />
+
+        <SelectField
+          v-if="form.salary_type !== 'unknown'"
+          id="salary_period"
+          v-model="form.salary_period"
+          :options="salaryPeriods"
+          name="salary_period"
+          label="Salary Period"
+          required
+          :errors
+        />
+
+        <template v-if="form.salary_type === 'fixed'">
           <InputField
             id="salary"
             v-model="form.salary_min"
@@ -322,9 +360,10 @@ function fetchApplication(id: number, editable = false) {
             label="Salary"
             required
             :icon="PoundSterling"
+            :errors
           />
         </template>
-        <template v-else-if="form.salaryRange === 'range'">
+        <template v-else-if="form.salary_type === 'range'">
           <div class="flex flex-row items-center gap-2">
             <InputField
               id="salaryMin"
@@ -336,6 +375,7 @@ function fetchApplication(id: number, editable = false) {
               label="Minimum Salary"
               required
               :icon="PoundSterling"
+              :errors
             />
             <InputField
               id="salaryMax"
@@ -347,6 +387,7 @@ function fetchApplication(id: number, editable = false) {
               label="Maximum Salary"
               required
               :icon="PoundSterling"
+              :errors
             />
           </div>
         </template>
@@ -358,6 +399,7 @@ function fetchApplication(id: number, editable = false) {
           name="status"
           label="Application Status"
           required
+          :errors
         />
 
         <div class="flex flex-row gap-x-2">

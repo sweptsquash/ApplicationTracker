@@ -3,6 +3,7 @@ import '../css/app.css'
 import Layout from '@/Layouts/index.vue'
 import routes from '@/routes/routes.json'
 import { createInertiaApp } from '@inertiajs/vue3'
+import { vTooltip } from 'floating-vue'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { trail } from 'momentum-trail'
 import { DefineComponent, createApp, h } from 'vue'
@@ -26,6 +27,7 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(trail, { routes, absolute: true })
+      .directive('tooltip', vTooltip)
       .mount(el)
   },
 })

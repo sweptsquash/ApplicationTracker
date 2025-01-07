@@ -22,5 +22,6 @@ declare module 'vue' {
     StatsPanel: typeof import('./../Components/StatsPanel.vue')['default']
     StatusBadge: typeof import('./../Components/StatusBadge.vue')['default']
     ThemeToggle: typeof import('./../Components/ThemeToggle.vue')['default']
+    TipTap: typeof import('./../Components/Inputs/TipTap.vue')['default']
   }
 }

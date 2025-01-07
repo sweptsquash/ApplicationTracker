@@ -31,6 +31,7 @@ const form = useForm<{
   salary_min: number
   salary_max: number
   status: string
+  notes: string
 }>({
   title: '',
   url: '',
@@ -40,6 +41,7 @@ const form = useForm<{
   salary_min: 0,
   salary_max: 0,
   status: 'applied',
+  notes: '',
 })
 
 const salaryTypes = [
@@ -401,6 +403,8 @@ function fetchApplication(id: number, editable = false) {
           required
           :errors
         />
+
+        <TipTap v-model="form.notes" label="Notes" />
 
         <div class="flex flex-row gap-x-2">
           <button type="button" class="btn grow" @click="isAddApplicationOpen = false">

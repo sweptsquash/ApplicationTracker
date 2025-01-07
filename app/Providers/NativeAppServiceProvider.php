@@ -14,8 +14,11 @@ class NativeAppServiceProvider implements ProvidesPhpIni
     public function boot(): void
     {
         Window::open()
-            ->width(800)
-            ->height(800);
+            ->minHeight(600)
+            ->minWidth(800)
+            ->title('Application Tracker')
+            ->hideMenu()
+            ->rememberState();
     }
 
     /**
@@ -23,7 +26,6 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function phpIni(): array
     {
-        return [
-        ];
+        return [];
     }
 }

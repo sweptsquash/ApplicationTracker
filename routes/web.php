@@ -14,7 +14,4 @@ Route::prefix('applications')->name('applications.')->controller(ApplicationsCon
     Route::get('{application}', 'show')->name('show');
     Route::put('{application}', 'update')->name('update');
     Route::delete('{application}', 'destroy')->name('destroy');
-
-    // TODO: Status update route
-    // TODO: Reset applications route
 });

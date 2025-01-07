@@ -31,7 +31,7 @@ class Application extends Model
     ];
 
     /**
-     * @return array{salary_period: 'App\Enums\SalaryPeriodType', salary_type: 'App\Enums\SalaryType', salary_min: int, salary_max: int, status: 'App\Enums\ApplicationStatus'}
+     * @return array{salary_period: 'App\Enums\SalaryPeriodType', salary_type: 'App\Enums\SalaryType', salary_min: 'integer', salary_max: 'integer', status: 'App\Enums\ApplicationStatus'}
      */
     protected function casts(): array
     {
@@ -44,6 +44,7 @@ class Application extends Model
         ];
     }
 
+    /** @return Attribute<int, int> */
     protected function salaryMin(): Attribute
     {
         return Attribute::make(
@@ -52,6 +53,7 @@ class Application extends Model
         );
     }
 
+    /** @return Attribute<int, int> */
     protected function salaryMax(): Attribute
     {
         return Attribute::make(

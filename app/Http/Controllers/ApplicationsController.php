@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApplicationStatus;
-use App\Enums\NotificationType;
 use App\Http\Requests\StoreApplicationRequest;
 use App\Http\Requests\UpdateApplicationRequest;
 use App\Http\Resources\ApplicationResource;
@@ -11,7 +10,6 @@ use App\Models\Application;
 use App\Models\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Inertia\Response;
@@ -59,7 +57,7 @@ class ApplicationsController extends Controller
             Application::create($validated);
         }
 
-        return back(HttpResponse::HTTP_CREATED)->flash(NotificationType::Success, 'Application created successfully.');
+        return back()->success('Application created successfully.');
     }
 
     public function show(Application $application): JsonResource
@@ -77,13 +75,13 @@ class ApplicationsController extends Controller
             $application->company()->create(['name' => $validated['company']]);
         }
 
-        return back()->flash(NotificationType::Success, 'Application updated successfully.');
+        return back()->success('Application updated successfully.');
     }
 
-    public function destroy(Application $application): HttpResponse
+    public function destroy(Application $application): RedirectResponse
     {
         $application->delete();
 
-        return response()->noContent();
+        return back()->success('Application deleted successfully.');
     }
 }

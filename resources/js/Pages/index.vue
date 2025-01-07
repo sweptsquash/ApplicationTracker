@@ -81,12 +81,12 @@ function addApplication() {
 function resetApplications() {
   isResetting.value = true
 
-  useAxios()
-    .delete(route('applications.reset'))
-    .then(() => {
+  useForm({}).delete(route('applications.reset'), {
+    onSuccess: () => {
       isResetting.value = false
       isConfirmResetOpen.value = false
-    })
+    },
+  })
 }
 
 watch(

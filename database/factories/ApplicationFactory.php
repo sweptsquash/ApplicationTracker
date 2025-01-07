@@ -26,6 +26,7 @@ class ApplicationFactory extends Factory
             'salary_min' => fake()->numberBetween(10000, 100000),
             'salary_max' => fake()->numberBetween(100000, 1000000),
             'status' => fake()->randomElement(['applied', 'interviewing', 'offer', 'rejected', 'hired', 'withdrawn']),
+            'notes' => fake()->paragraph(),
         ];
     }
 }

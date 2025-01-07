@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ApplicationStatus;
 use App\Enums\SalaryPeriodType;
 use App\Enums\SalaryType;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,7 @@ class Application extends Model
         'salary_min',
         'salary_max',
         'status',
+        'notes',
     ];
 
     /**
@@ -40,6 +42,22 @@ class Application extends Model
             'salary_max' => 'integer',
             'status' => ApplicationStatus::class,
         ];
+    }
+
+    protected function salaryMin(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => $value,
+            fn ($value) => toMinorAmount($value),
+        );
+    }
+
+    protected function salaryMax(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => $value,
+            fn ($value) => toMinorAmount($value),
+        );
     }
 
     /** @return BelongsTo<Company, $this> */

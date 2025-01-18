@@ -8,6 +8,7 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
@@ -26,26 +27,35 @@ describe('Applications', function () {
         $application = Application::factory()->make();
 
         post(route('applications.store'), $application->toArray())
-            ->assertStatus(201)
+            ->assertRedirect(route('home'))
             ->assertSessionHas('notification', [
                 'type' => NotificationType::Success,
                 'body' => 'Application created successfully.',
             ]);
 
-        assertDatabaseHas('applications', [...$application->toArray(), 'company_id' => null]);
+        assertDatabaseHas('applications', [
+            ...$application->toArray(),
+            'company_id' => null,
+            'salary_min' => toMinorAmount($application->salary_min),
+            'salary_max' => toMinorAmount($application->salary_max),
+        ]);
     });
 
     it('can be created with a company', function () {
         $application = Application::factory()->make();
 
         post(route('applications.store'), [...$application->toArray(), 'company' => 'Company Name'])
-            ->assertStatus(201)
+            ->assertRedirect(route('home'))
             ->assertSessionHas('notification', [
                 'type' => NotificationType::Success,
                 'body' => 'Application created successfully.',
             ]);
 
-        $applicationData = $application->toArray();
+        $applicationData = [
+            ...$application->toArray(),
+            'salary_min' => toMinorAmount($application->salary_min),
+            'salary_max' => toMinorAmount($application->salary_max),
+        ];
 
         unset($applicationData['company_id']);
 
@@ -56,11 +66,19 @@ describe('Applications', function () {
     it('can be shown', function () {
         $application = Application::factory()->create();
 
-        get(route('applications.show', $application))
-            ->assertInertia(function (AssertableInertia $page) use ($application) {
-                $page->component('index')
-                    ->where('application.id', $application->id);
-            });
+        getJson(route('applications.show', $application))
+            ->assertOk()
+            ->assertJsonFragment([
+                'id' => $application->id,
+                'title' => $application->title,
+                'url' => $application->url,
+                'salary_period' => $application->salary_period,
+                'salary_type' => $application->salary_type,
+                'salary_min' => $application->salary_min,
+                'salary_max' => $application->salary_max,
+                'status' => $application->status,
+                'notes' => $application->notes,
+            ]);
     });
 
     it('can be updated', function () {
@@ -74,7 +92,12 @@ describe('Applications', function () {
                 'body' => 'Application updated successfully.',
             ]);
 
-        assertDatabaseHas('applications', [...$newApplication->toArray(), 'company_id' => $application->company_id]);
+        assertDatabaseHas('applications', [
+            ...$newApplication->toArray(),
+            'company_id' => $application->company_id,
+            'salary_min' => toMinorAmount($newApplication->salary_min),
+            'salary_max' => toMinorAmount($newApplication->salary_max),
+        ]);
     });
 
     it('can be updated with a company', function () {
@@ -88,7 +111,11 @@ describe('Applications', function () {
                 'body' => 'Application updated successfully.',
             ]);
 
-        $newApplicationData = $newApplication->toArray();
+        $newApplicationData = [
+            ...$newApplication->toArray(),
+            'salary_min' => toMinorAmount($newApplication->salary_min),
+            'salary_max' => toMinorAmount($newApplication->salary_max),
+        ];
 
         unset($newApplicationData['company_id']);
 
@@ -124,5 +151,17 @@ describe('Applications', function () {
             ]);
 
         assertDatabaseMissing('applications', ['id' => $applicationId]);
+    });
+
+    it('can clear all applications', function () {
+        Application::factory()->count(3)->create();
+
+        delete(route('applications.reset'))
+            ->assertSessionHas('notification', [
+                'type' => NotificationType::Success,
+                'body' => 'Application has been reset',
+            ]);
+
+        assertDatabaseMissing('applications', []);
     });
 });

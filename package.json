@@ -6,10 +6,11 @@
     "scripts": {
         "dev": "run-p routes lint && vite",
         "build:dev": "run-p routes lint && vite build --mode development",
-        "build:prod": "run-p routes lint && vite build",
+        "build:prod": "run-p routes tsc lint && vite build",
         "lint": "eslint . --fix",
         "test:lint": "eslint .",
-        "routes": "php artisan trail:generate"
+        "routes": "php artisan trail:generate",
+        "tsc": "vue-tsc --noEmit"
     },
     "overrides": {
         "vue": "latest"
@@ -68,6 +69,7 @@
         "momentum-layout": "^0.1.0",
         "momentum-trail": "^0.4.0",
         "pinia": "^2.3.0",
+        "pluralize": "^8.0.0",
         "tippy.js": "^6.3.7",
         "tiptap-extension-font-size": "^1.2.0",
         "vue": "latest"
@@ -80,6 +82,7 @@
         "@types/eslint__js": "^8.42.3",
         "@types/lodash": "^4.17.13",
         "@types/node": "^22.10.1",
+        "@types/pluralize": "^0.0.33",
         "@typescript-eslint/eslint-plugin": "^8.17.0",
         "@typescript-eslint/parser": "^8.17.0",
         "@vitejs/plugin-vue": "^5.2.1",

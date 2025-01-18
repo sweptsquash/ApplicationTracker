@@ -15,11 +15,13 @@ declare namespace App {
         salary_type: string;
         salary_min: number;
         salary_max: number;
-        status: string;
+        status: ApplicationStatus;
         notes?: string | null;
         created_at: string;
         updated_at: string;
     }
+
+    export type ApplicationStatus = 'applied' | 'awaiting_response' | 'interviewing' | 'rejected' | 'offer' | 'withdrawn';
 
     export type Company = {
       id: number;

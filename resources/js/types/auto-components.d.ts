@@ -23,5 +23,6 @@ declare module 'vue' {
     StatusBadge: typeof import('./../Components/StatusBadge.vue')['default']
     ThemeToggle: typeof import('./../Components/ThemeToggle.vue')['default']
     TipTap: typeof import('./../Components/Inputs/TipTap.vue')['default']
+    VueDatePicker: typeof import('@vuepic/vue-datepicker')['VueDatePicker']
   }
 }

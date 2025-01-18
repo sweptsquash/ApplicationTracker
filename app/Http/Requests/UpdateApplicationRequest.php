@@ -23,9 +23,10 @@ class UpdateApplicationRequest extends FormRequest
             'company' => ['nullable', 'string'],
             'salary_period' => ['required', Rule::enum(SalaryPeriodType::class)],
             'salary_type' => ['required', Rule::enum(SalaryType::class)],
-            'salary_min' => [Rule::requiredIf(fn () => $this->salary_type !== SalaryType::UNKNOWN), 'integer'],
-            'salary_max' => ['required_if:salary_type,range', 'integer', 'gte:salary_min'],
+            'salary_min' => [Rule::requiredIf(fn () => $this->salary_type !== SalaryType::UNKNOWN), 'integer', 'min:0'],
+            'salary_max' => ['required_if:salary_type,range', 'integer', 'min:0', Rule::when($this->salary_type === SalaryType::RANGE, ['gte:salary_min'])],
             'status' => ['required', Rule::enum(ApplicationStatus::class)],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }

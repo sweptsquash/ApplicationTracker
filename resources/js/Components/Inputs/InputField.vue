@@ -16,7 +16,7 @@ const props = withDefaults(
     max?: number
     step?: number
     icon?: FunctionalComponent
-    errors?: { [key: string]: any }
+    errors?: { [key: string]: unknown }
   }>(),
   {
     type: 'text',
@@ -85,7 +85,7 @@ const error = computed(() => {
       >
         <component :is="icon" class="h-4 w-4" />
       </div>
-      <div class="grid grid-cols-1">
+      <div class="grid grow grid-cols-1">
         <input
           :id
           v-model="model"

@@ -1,11 +1,13 @@
 <script lang="ts" setup>
+import VueDatePicker from '@vuepic/vue-datepicker'
+import { useColorMode } from '@vueuse/core'
 import { Eye, Pencil, PoundSterling } from 'lucide-vue-next'
 
 defineProps<{
   applications: { data: App.Application[]; meta: App.PageMeta }
   stats: App.Stats
   application?: App.Application
-  errors?: { [key: string]: any }
+  errors?: { [key: string]: unknown }
 }>()
 
 const isConfirmResetOpen = ref(false)
@@ -30,7 +32,8 @@ const form = useForm<{
   salary_type: 'unknown' | 'range' | 'fixed'
   salary_min: number
   salary_max: number
-  status: string
+  status: App.ApplicationStatus
+  applied_at: string | Date
   notes: string
 }>({
   title: '',
@@ -41,8 +44,11 @@ const form = useForm<{
   salary_min: 0,
   salary_max: 0,
   status: 'applied',
+  applied_at: new Date(),
   notes: '',
 })
+
+const isDark = ref(false)
 
 const salaryTypes = [
   { value: 'unknown', label: 'Unknown / Competitive' },
@@ -60,12 +66,18 @@ const salaryPeriods = [
   { value: 'yearly', label: 'Yearly' },
 ]
 
-const statues = [
+const statues: { value: App.ApplicationStatus; label: string }[] = [
   { value: 'applied', label: 'Applied' },
+  { value: 'awaiting_response', label: 'Awaiting Response' },
   { value: 'interviewing', label: 'Interviewing' },
   { value: 'offer', label: 'Offer' },
   { value: 'rejected', label: 'Rejected' },
+  { value: 'withdrawn', label: 'Withdrawn' },
 ]
+
+onMounted(() => {
+  isDark.value = useColorMode().value === 'dark'
+})
 
 function addApplication() {
   isSubmitting.value = true
@@ -108,6 +120,10 @@ function fetchApplication(id: number, editable = false) {
     .then((response) => {
       currentApplication.value = response.data
     })
+}
+
+const dateFormat = (date: Date) => {
+  return useDayJs(date).format('DD/MM/YYYY')
 }
 </script>
 
@@ -402,6 +418,14 @@ function fetchApplication(id: number, editable = false) {
           label="Application Status"
           required
           :errors
+        />
+
+        <VueDatePicker
+          v-model="form.applied_at"
+          :format="dateFormat"
+          :dark="isDark"
+          :enable-time-picker="false"
+          auto-apply
         />
 
         <TipTap v-model="form.notes" label="Notes" />

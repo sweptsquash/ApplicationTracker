@@ -10,7 +10,7 @@ const props = withDefaults(
     required?: boolean
     autocomplete?: string
     options?: Array<{ value: string; label: string }>
-    errors?: { [key: string]: any }
+    errors?: { [key: string]: unknown }
   }>(),
   {
     id: undefined,

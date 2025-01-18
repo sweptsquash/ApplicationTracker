@@ -37,7 +37,24 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['**/node_modules', '**/public', '**/vendor', '**/dist', '**/.nuxt'],
+    ignores: [
+      'app/**/*',
+      'bootstrap/**/*',
+      'config/**/*',
+      'database/**/*',
+      'node_modules/**/*',
+      'public/**/*',
+      'routes/**/*',
+      'storage/**/*',
+      'tests/**/*',
+      'vendor/**/*',
+      'package-lock.json',
+      '*.md',
+      'eslint.config.mjs',
+      'tailwind.config.mjs',
+      'resources/js/types/routes.d.ts',
+      'resources/js/types/vite-env.d.ts',
+    ],
   },
   {
     rules: {

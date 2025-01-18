@@ -368,7 +368,13 @@ function setLink() {
           <select
             v-model="currentFontFamily"
             class="select"
-            @change="editor?.chain()?.focus()?.setFontFamily($event.target?.value)?.run()"
+            @change="
+              editor
+                ?.chain()
+                ?.focus()
+                ?.setFontFamily(($event.target as HTMLSelectElement)?.value)
+                ?.run()
+            "
           >
             <option
               v-for="fontFamily in fontFamilies"
@@ -382,7 +388,13 @@ function setLink() {
           <select
             v-model="currentFontSize"
             class="select"
-            @change="editor?.chain()?.focus()?.setFontSize(`${$event.target?.value}pt`)?.run()"
+            @change="
+              editor
+                ?.chain()
+                ?.focus()
+                ?.setFontSize(`${($event.target as HTMLSelectElement)?.value}pt`)
+                ?.run()
+            "
           >
             <option v-for="fontSize in fontSizes" :key="fontSize" :value="fontSize">
               {{ fontSize }}
@@ -427,7 +439,7 @@ function setLink() {
           <select
             v-model="currentFontStyle"
             class="select"
-            @change="changeFontStyle($event.target?.value)"
+            @change="changeFontStyle(($event.target as HTMLSelectElement)?.value)"
           >
             <option v-for="textStyle in textStyles" :key="textStyle.value" :value="textStyle.value">
               {{ textStyle.label }}

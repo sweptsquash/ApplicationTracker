@@ -11,17 +11,22 @@ declare namespace App {
         title: string;
         url: string;
         company?: Company | null;
-        salary_period: string;
-        salary_type: string;
+        salary_period: ApplicationSalaryPeriod;
+        salary_type: ApplicationSalaryType;
         salary_min: number;
         salary_max: number;
         status: ApplicationStatus;
         notes?: string | null;
+        applied_at: string;
         created_at: string;
         updated_at: string;
     }
 
-    export type ApplicationStatus = 'applied' | 'awaiting_response' | 'interviewing' | 'rejected' | 'offer' | 'withdrawn';
+    export type ApplicationSalaryPeriod = 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+    export type ApplicationSalaryType = 'unknown' | 'range' | 'fixed';
+
+    export type ApplicationStatus = 'applied' | 'awaiting_response' | 'interviewing' | 'rejected' | 'offer' | 'offer_accepted' | 'withdrawn';
 
     export type Company = {
       id: number;

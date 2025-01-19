@@ -11,6 +11,17 @@
 |
 */
 
+use Carbon\Carbon;
+
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature', 'Unit');
+
+function prepareApplicationDataForAssertion(array $data)
+{
+    $data['salary_min'] = toMinorAmount($data['salary_min']);
+    $data['salary_max'] = toMinorAmount($data['salary_max']);
+    $data['applied_at'] = Carbon::parse($data['applied_at'])->format('Y-m-d H:i:s');
+
+    return $data;
+}

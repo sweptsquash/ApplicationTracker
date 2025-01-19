@@ -15,7 +15,6 @@ declare module 'vue' {
     InputField: typeof import('./../Components/Inputs/InputField.vue')['default']
     Modal: typeof import('./../Components/Modal.vue')['default']
     ModalConfirm: typeof import('./../Components/ModalConfirm.vue')['default']
-    NoteSlideOver: typeof import('./../Components/Partials/NoteSlideOver.vue')['default']
     Pagination: typeof import('./../Components/Pagination.vue')['default']
     SelectField: typeof import('./../Components/Inputs/SelectField.vue')['default']
     SlideOver: typeof import('./../Components/SlideOver.vue')['default']
@@ -23,6 +22,5 @@ declare module 'vue' {
     StatusBadge: typeof import('./../Components/StatusBadge.vue')['default']
     ThemeToggle: typeof import('./../Components/ThemeToggle.vue')['default']
     TipTap: typeof import('./../Components/Inputs/TipTap.vue')['default']
-    VueDatePicker: typeof import('@vuepic/vue-datepicker')['VueDatePicker']
   }
 }

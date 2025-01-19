@@ -34,10 +34,8 @@ describe('Applications', function () {
             ]);
 
         assertDatabaseHas('applications', [
-            ...$application->toArray(),
+            ...prepareApplicationDataForAssertion($application->toArray()),
             'company_id' => null,
-            'salary_min' => toMinorAmount($application->salary_min),
-            'salary_max' => toMinorAmount($application->salary_max),
         ]);
     });
 
@@ -51,15 +49,11 @@ describe('Applications', function () {
                 'body' => 'Application created successfully.',
             ]);
 
-        $applicationData = [
-            ...$application->toArray(),
-            'salary_min' => toMinorAmount($application->salary_min),
-            'salary_max' => toMinorAmount($application->salary_max),
-        ];
+        $applicationData = $application->toArray();
 
         unset($applicationData['company_id']);
 
-        assertDatabaseHas('applications', $applicationData);
+        assertDatabaseHas('applications', prepareApplicationDataForAssertion($applicationData));
         assertDatabaseHas('companies', ['name' => 'Company Name']);
     });
 
@@ -93,10 +87,8 @@ describe('Applications', function () {
             ]);
 
         assertDatabaseHas('applications', [
-            ...$newApplication->toArray(),
+            ...prepareApplicationDataForAssertion($newApplication->toArray()),
             'company_id' => $application->company_id,
-            'salary_min' => toMinorAmount($newApplication->salary_min),
-            'salary_max' => toMinorAmount($newApplication->salary_max),
         ]);
     });
 
@@ -111,15 +103,11 @@ describe('Applications', function () {
                 'body' => 'Application updated successfully.',
             ]);
 
-        $newApplicationData = [
-            ...$newApplication->toArray(),
-            'salary_min' => toMinorAmount($newApplication->salary_min),
-            'salary_max' => toMinorAmount($newApplication->salary_max),
-        ];
+        $newApplicationData = $newApplication->toArray();
 
         unset($newApplicationData['company_id']);
 
-        assertDatabaseHas('applications', $newApplicationData);
+        assertDatabaseHas('applications', prepareApplicationDataForAssertion($newApplicationData));
         assertDatabaseHas('companies', ['name' => 'New Company Name']);
     });
 

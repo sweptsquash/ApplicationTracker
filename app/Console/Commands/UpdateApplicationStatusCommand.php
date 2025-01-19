@@ -28,7 +28,7 @@ class UpdateApplicationStatusCommand extends Command
     public function handle()
     {
         Application::where('status', ApplicationStatus::APPLIED)
-            ->where('created_at', '<=', now()->subDays(7))
+            ->where('applied_at', '<=', now()->subDays(7))
             ->update(['status' => ApplicationStatus::AWAITING_RESPONSE]);
     }
 }

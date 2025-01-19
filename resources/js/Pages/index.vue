@@ -28,8 +28,8 @@ const form = useForm<{
   title: string
   url: string
   company?: string
-  salary_period?: 'hourly' | 'daily' | 'weekly' | 'bi-weekly' | 'monthly' | 'yearly'
-  salary_type: 'unknown' | 'range' | 'fixed'
+  salary_period?: App.ApplicationSalaryPeriod
+  salary_type: App.ApplicationSalaryType
   salary_min: number
   salary_max: number
   status: App.ApplicationStatus
@@ -456,8 +456,11 @@ const dateFormat = (date: Date) => {
     <ApplicationSlideOver
       v-model="currentApplication"
       :is-open="isApplicationSlideOverOpen"
+      :is-dark="isDark"
+      :errors
       :editable="isEditingApplication"
       @edit="isEditingApplication = true"
+      @view="isEditingApplication = false"
       @close="isApplicationSlideOverOpen = false"
     />
   </div>

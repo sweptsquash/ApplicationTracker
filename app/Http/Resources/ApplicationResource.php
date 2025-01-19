@@ -20,6 +20,7 @@ class ApplicationResource extends JsonResource
             'salary_max' => $this->salary_max,
             'status' => $this->status,
             'notes' => $this->notes,
+            'applied_at' => $this->applied_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

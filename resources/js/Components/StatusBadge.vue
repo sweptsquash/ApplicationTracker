@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  status: string
+  status: App.ApplicationStatus
 }>()
 
 const badgeClass = computed(() => {
   switch (props.status) {
-    case 'hired':
+    case 'offer_accepted':
       return 'bg-green-50 text-green-700 ring-green-600/20'
     case 'rejected':
       return 'bg-red-50 text-red-700 ring-red-600/10'
+    case 'awaiting_response':
     case 'interviewing':
       return 'bg-yellow-50 text-yellow-800 ring-yellow-600/20'
     case 'offer':
@@ -28,6 +29,6 @@ const badgeClass = computed(() => {
       badgeClass,
     ]"
   >
-    {{ useCapitalizeFirstLetter(status) }}
+    {{ useCapitalizeEachWord(status.replace('_', ' ')) }}
   </span>
 </template>

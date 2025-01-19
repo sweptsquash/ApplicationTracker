@@ -33,9 +33,7 @@ class ApplicationsController extends Controller
                     'rejections' => Application::where('status', ApplicationStatus::REJECTED)->count(),
                     'offers' => Application::where('status', ApplicationStatus::OFFER)->count(),
                     'withdrawn' => Application::where('status', ApplicationStatus::WITHDRAWN)->count(),
-                    'awaiting' => Application::where('status', ApplicationStatus::APPLIED)
-                        ->where('created_at', '<=', now()->subWeek())
-                        ->count(),
+                    'awaiting' => Application::where('status', ApplicationStatus::AWAITING_RESPONSE)->count(),
                 ],
             ]
         );
@@ -62,6 +60,8 @@ class ApplicationsController extends Controller
 
     public function show(Application $application): JsonResource
     {
+        $application->load('company');
+
         return ApplicationResource::make($application);
     }
 

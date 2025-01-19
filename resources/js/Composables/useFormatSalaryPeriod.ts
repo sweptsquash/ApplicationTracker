@@ -8,7 +8,7 @@ export function useFormatSalaryPeriod(app?: App.Application): string {
       return 'per week'
     case 'monthly':
       return 'per month'
-    case 'annually':
+    case 'yearly':
       return 'per year'
     default:
       return ''

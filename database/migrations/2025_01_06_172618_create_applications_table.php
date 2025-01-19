@@ -24,6 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('salary_max')->nullable();
             $table->string('status')->default(ApplicationStatus::APPLIED->value);
             $table->longText('notes')->nullable();
+            $table->timestamp('applied_at')->nullable();
             $table->timestamps();
         });
     }

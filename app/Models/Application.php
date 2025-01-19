@@ -28,10 +28,11 @@ class Application extends Model
         'salary_max',
         'status',
         'notes',
+        'applied_at',
     ];
 
     /**
-     * @return array{salary_period: 'App\Enums\SalaryPeriodType', salary_type: 'App\Enums\SalaryType', salary_min: 'integer', salary_max: 'integer', status: 'App\Enums\ApplicationStatus'}
+     * @return array{salary_period: 'App\Enums\SalaryPeriodType', salary_type: 'App\Enums\SalaryType', salary_min: 'integer', salary_max: 'integer', status: 'App\Enums\ApplicationStatus', applied_at: 'datetime'}
      */
     protected function casts(): array
     {
@@ -41,6 +42,7 @@ class Application extends Model
             'salary_min' => 'integer',
             'salary_max' => 'integer',
             'status' => ApplicationStatus::class,
+            'applied_at' => 'datetime',
         ];
     }
 
